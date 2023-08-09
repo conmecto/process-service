@@ -25,6 +25,22 @@ interface IBaseModel {
     deletedAt: Date
 }
 
+interface IGetSettingObject {
+    age: number,
+    city?: string,
+    country: string, 
+    searchFor: string,
+    searchIn: string,
+    gender: string,
+    minSearchAge: number,
+    maxSearchAge: number,
+    currentMatch?: number,
+}
+
+interface ICreatePossibleMatchResponse {
+    userId2: number
+}
+
 export { 
-    IGeneric, IRequestObject, IGenericResponse
+    IGeneric, IRequestObject, IGenericResponse, IGetSettingObject, ICreatePossibleMatchResponse
 };

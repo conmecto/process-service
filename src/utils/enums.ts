@@ -61,6 +61,8 @@ export enum PrefixesForLogs {
 
     DB_CONNECTED = 'DB connection successful: ',
     DB_CONNECTION_FAILED = 'DB connection failed: ',
+    DB_GET_MATCH_SETTING_ERROR = 'DB get match setting error',
+    DB_CREATE_POSSIBLE_MATCH_ERROR = 'DB create possible match error',
     
     EMAIL_SEND_ERROR = 'Email send error: '
 }

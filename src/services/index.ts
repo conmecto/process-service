@@ -1,5 +1,5 @@
 import CustomError from './customError';
-import { handleProcessMatchQueueMessage } from './handleMessage';
+import handleProcessMatchQueueMessage from './handleMessage';
 
 export {
     CustomError,

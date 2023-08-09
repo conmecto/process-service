@@ -38,8 +38,7 @@ export default {
         password: process.env.REDIS_PASSWORD || 'REDIS_PASSWORD',
         channels: {
             processMatchQueue: process.env.REDIS_CHANNEL_PROCESS_MATCH_QUEUE || 'process-match-queue',
-            userCreatedMatch: process.env.REDIS_CHANNEL_USER_CREATED_MATCH || 'user-created-match',
-            userCreatedMatchError: process.env.REDIS_CHANNEL_USER_CREATED_MATCH_ERROR || 'user-created-match-error',
+            matchCreated: process.env.REDIS_CHANNEL_MATCH_CREATED || 'match-created'
         },
         matchQueue: process.env.MATCH_QUEUE || 'match-queue-',
         connectTimeout: Number(process.env.REDIS_CONNECT_TIMEOUT) || 30000,

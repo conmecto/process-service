@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Process match service",
   "main": "index.js",
-  "repository": "https://github.com/gautamaman30/instantconnect-process-match-service.git",
   "scripts": {
     "lint": "eslint . --ext .ts",
     "prestart:dev": "rm -rf ./dist && npm run build",
