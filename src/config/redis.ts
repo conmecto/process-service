@@ -2,6 +2,8 @@ import { createClient } from 'redis';
 import { Environments, enums } from '../utils';
 import { handleProcessMatchQueueMessage } from '../services'
 
+const runRedisFile = () => {};
+
 const redisClient1 = createClient({
     socket: {
         host: Environments.redis.host,
@@ -45,4 +47,4 @@ redisClient2.on('error', (err) => {
     console.error(enums.PrefixesForLogs.REDIS_CONNECTION_ERROR_CLIENT2 + err);
 });
 
-export { redisClient1, redisClient2 };
+export { redisClient1, redisClient2, runRedisFile };
