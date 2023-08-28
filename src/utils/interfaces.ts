@@ -38,7 +38,7 @@ interface IGetSettingObject {
 }
 
 interface ICreatePossibleMatchResponse {
-    userId2: number
+    matchId: number
 }
 
 export { 

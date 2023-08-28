@@ -14,7 +14,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         )
         ORDER BY active_score_second DESC, avg_match_time DESC
         LIMIT 1`;
-    const query2 = 'INSERT INTO match_block(user_id_1, user_id_2) VALUES ($1, $2) RETURNING match_block.user_id_2';
+    const query2 = 'INSERT INTO match(user_id_1, user_id_2) VALUES ($1, $2) RETURNING match.id';
     const query3 = `UPDATE setting 
         SET current_match= 
         CASE
@@ -52,7 +52,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         client.release();
     }
     const check = res?.rows?.length ? { 
-        userId2: <number>res.rows[0].user_id_2 
+        matchId: <number>res.rows[0].id 
     } : null;
     return check;
 }

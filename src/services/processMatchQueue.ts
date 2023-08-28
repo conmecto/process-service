@@ -23,12 +23,7 @@ const processMatchQueue = async (queueIndex: number) => {
             tempQueue.push(userId);    
             continue;
         } 
-        const matchedUserId = possibleMatch.userId2?.toString();
-        await Promise.all([
-            setKey(constants.CHECK_USER_MATCHED_KEY + userId, matchedUserId),
-            setKey(constants.CHECK_USER_MATCHED_KEY + matchedUserId, userId?.toString()),
-            cacheClient.publish(Environments.redis.channels.matchCreated, userId?.toString())
-        ]);
+        await cacheClient.publish(Environments.redis.channels.matchCreated, possibleMatch.matchId?.toString());
     } while(userId);
     for(let i = 0; i < tempQueue.length; i++) {
         await cacheClient.lPush(queueName, userId?.toString()); 
