@@ -4,7 +4,7 @@ import { interfaces, enums, helpers, constants } from '../utils';
 
 const createPossibleMatchForUser = async (userId: number, userSettings: interfaces.IGetSettingObject): Promise<interfaces.ICreatePossibleMatchResponse | null>  => {    
     const query1 = `SELECT user_id FROM SETTING WHERE user_id!=$1 AND age=$2 AND max_search_age>=$3
-        AND min_search_age<=$3 AND search_in=$4 AND current_match=NULL AND  
+        AND min_search_age<=$3 AND search_in=$4 AND is_matched=NULL AND  
         ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
         AND user_id NOT IN 
         (
@@ -15,13 +15,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         ORDER BY active_score_second DESC, avg_match_time DESC
         LIMIT 1`;
     const query2 = 'INSERT INTO match(user_id_1, user_id_2) VALUES ($1, $2) RETURNING match.id';
-    const query3 = `UPDATE setting 
-        SET current_match= 
-        CASE
-            WHEN user_id=$1 THEN $2
-            WHEN user_id=$2 THEN $1
-        END
-        WHERE user_id IN ($1, $2)`;
+    const query3 = 'UPDATE setting set is_matched=true WHERE user_id=$1 OR user_id=$2';
     const searchAge = helpers.getRandomNumberMinMax(userSettings.minSearchAge, userSettings.maxSearchAge);
     const params1 = [userId, searchAge, userSettings.age, userSettings.searchIn];
 
@@ -44,7 +38,6 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
             throw new Error();
         }
         await client.query(query3, params2);
-        await client.query('COMMIT');
     } catch (error) {
         console.error(enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + error);
         await client.query('ROLLBACK');

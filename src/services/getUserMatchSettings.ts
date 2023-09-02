@@ -4,7 +4,7 @@ import { getDbClient } from '../config';
 import { interfaces, enums, helpers } from '../utils';
 
 const getUserMatchSettings = async (userId: number): Promise<interfaces.IGetSettingObject> => {
-    const query = 'SELECT age, country, current_match, gender, max_search_age, min_search_age, search_for, search_in FROM setting WHERE user_id=$1';
+    const query = 'SELECT age, country, gender, max_search_age, min_search_age, search_for, search_in FROM setting WHERE user_id=$1';
     const params = [userId];
     let res: QueryResult | null = null;
     const client = await getDbClient();
@@ -26,8 +26,7 @@ const getUserMatchSettings = async (userId: number): Promise<interfaces.IGetSett
             minSearchAge: setting?.min_search_age,
             searchFor: setting?.search_for,
             searchIn: setting?.search_in,
-            currentMatch: setting?.current_match,
-        }, ['max_search_age', 'min_search_age', 'search_in', 'search_for', 'current_match']);
+        }, ['max_search_age', 'min_search_age', 'search_in', 'search_for']);
     } 
     return setting;
 }

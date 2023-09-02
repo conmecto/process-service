@@ -34,7 +34,6 @@ interface IGetSettingObject {
     gender: string,
     minSearchAge: number,
     maxSearchAge: number,
-    currentMatch?: number,
 }
 
 interface ICreatePossibleMatchResponse {
