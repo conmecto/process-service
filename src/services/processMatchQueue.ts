@@ -1,21 +1,22 @@
 import { redisClient1 as cacheClient } from '../config';
-import { Environments, constants, enums } from '../utils';
-import { setKey } from './cache';
+import { Environments } from '../utils';
 import getUserMatchSettings from './getUserMatchSettings';
 import createPossibleMatchForUser from './createPossibleMatchForUser';
+import checkUserMatch from './checkUserMatch';
 
 const processMatchQueue = async (queueIndex: number) => {
-    let userId = 0;
     const queueName = Environments.redis.matchQueue + queueIndex;
     const tempQueue: number[] = [];
-    do {
-        const tempUserId = await cacheClient.rPop(queueName);
-        if (!tempUserId) {
+    let size = await cacheClient.lLen(queueName);
+    while(size-- > 0) {
+        let userId: string | number | null = await cacheClient.rPop(queueName);
+        if (!userId) {
             continue;
         }
-        userId = Number(tempUserId);
+        userId = Number(userId);
         const userMatchSetting = await getUserMatchSettings(userId);
-        if (!userMatchSetting || userMatchSetting.currentMatch) {
+        const isUserMatched = await checkUserMatch(userId);
+        if (!userMatchSetting || isUserMatched) {
             continue;
         } 
         const possibleMatch = await createPossibleMatchForUser(userId, userMatchSetting);
@@ -24,10 +25,10 @@ const processMatchQueue = async (queueIndex: number) => {
             continue;
         } 
         await cacheClient.publish(Environments.redis.channels.matchCreated, possibleMatch.matchId?.toString());
-    } while(userId);
-    for(let i = 0; i < tempQueue.length; i++) {
-        await cacheClient.lPush(queueName, userId?.toString()); 
     }
+    tempQueue.forEach(async id => {
+        await cacheClient.lPush(queueName, id?.toString()); 
+    });
 } 
 
 export default processMatchQueue;

@@ -57,12 +57,13 @@ export enum PrefixesForLogs {
     REDIS_PUBLISH_CHANNEL_ERROR = 'Redis publish channel error: ',
     REDIS_SUBSCRIBE_CHANNEL_ERROR = 'Redis subscribe channel error: ',
     REDIS_CHANNEL_MESSAGE_RECEIVE_ERROR = 'Redis channel message receive error: ',
-    REDIS_PROCESS_MATCH_QUEUE_ERROR = 'Redis process match queue error',
+    REDIS_PROCESS_MATCH_QUEUE_ERROR = 'Redis process match queue error: ',
 
     DB_CONNECTED = 'DB connection successful: ',
     DB_CONNECTION_FAILED = 'DB connection failed: ',
-    DB_GET_MATCH_SETTING_ERROR = 'DB get match setting error',
-    DB_CREATE_POSSIBLE_MATCH_ERROR = 'DB create possible match error',
+    DB_GET_MATCH_SETTING_ERROR = 'DB get match setting error: ',
+    DB_CREATE_POSSIBLE_MATCH_ERROR = 'DB create possible match error: ',
+    DB_CHECK_USER_MATCH_ERROR = 'DB check user match error: ',
     
     EMAIL_SEND_ERROR = 'Email send error: '
 }
