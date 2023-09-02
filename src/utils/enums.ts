@@ -69,4 +69,5 @@ export enum PrefixesForLogs {
 }
 
 export enum Messages {
+    MATCH_QUEUE_UPDATED = 'Match queue updated',
 }
