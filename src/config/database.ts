@@ -1,6 +1,11 @@
-import { Pool, PoolClient } from 'pg';
+import pg, { Pool, PoolClient } from 'pg';
 import { Environments, constants, enums } from '../utils';
 import { CustomError } from '../services';
+
+const timestampzOid = 1184;
+pg.types.setTypeParser(timestampzOid, function (value) {
+  return value
+});
 
 const pool = new Pool({
     host: Environments.database.host,
