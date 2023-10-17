@@ -40,6 +40,13 @@ interface ICreatePossibleMatchResponse {
     matchId: number
 }
 
+interface ISaveMessageData {
+    sender: number,
+    receiver: number,
+    matchId: number,
+    message: string,
+}
+
 export { 
-    IGeneric, IRequestObject, IGenericResponse, IGetSettingObject, ICreatePossibleMatchResponse
+    IGeneric, IRequestObject, IGenericResponse, IGetSettingObject, ICreatePossibleMatchResponse, ISaveMessageData
 };

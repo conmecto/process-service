@@ -1,7 +1,7 @@
 {
-  "name": "process-match-service",
+  "name": "process-service",
   "version": "1.0.0",
-  "description": "Process match service",
+  "description": "Process service",
   "main": "index.js",
   "scripts": {
     "lint": "eslint . --ext .ts",
