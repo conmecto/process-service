@@ -18,7 +18,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         )
         ORDER BY active_score_second DESC, avg_match_time DESC
         LIMIT 1`;
-    const query2 = 'INSERT INTO match(city, user_id_1, user_id_2) VALUES ($1, $2, $3) RETURNING match.id';
+    const query2 = 'INSERT INTO match(country, city, user_id_1, user_id_2) VALUES ($1, $2, $3, $4) RETURNING match.id';
     const query3 = 'UPDATE setting set is_matched=true, current_queue=NULL WHERE user_id=$1 OR user_id=$2';
     const params1 = [userId, userSettings.age, userSettings.searchIn];
 
@@ -27,7 +27,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
     const client = await getDbClient();
     try {
         await client.query('BEGIN');
-        const params2 = [userSettings.searchIn, userId];
+        const params2 = [userSettings.country, userSettings.searchIn, userId];
         console.log(query1);
         console.log(params1);
         const user = await client.query(query1, params1);
