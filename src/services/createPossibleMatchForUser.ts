@@ -16,10 +16,11 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
             UNION 
             (SELECT user_id_2 as blocked_user FROM match_block WHERE user_id_1=$1)
         )
-        ORDER BY active_score_second DESC, avg_match_time DESC
+        ORDER BY avg_match_time DESC
         LIMIT 1`;
+        //        ORDER BY active_score_second DESC, avg_match_time DESC
     const query2 = 'INSERT INTO match(country, city, user_id_1, user_id_2) VALUES ($1, $2, $3, $4) RETURNING match.id';
-    const query3 = 'UPDATE setting set is_matched=true, current_queue=NULL WHERE user_id=$1 OR user_id=$2';
+    const query3 = 'UPDATE setting SET is_matched=true, current_queue=NULL WHERE user_id=$1 OR user_id=$2';
     const params1 = [userId, userSettings.age, userSettings.searchIn];
 
     let res: QueryResult | null = null;
