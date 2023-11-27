@@ -66,6 +66,7 @@ export enum PrefixesForLogs {
     DB_CREATE_POSSIBLE_MATCH_ERROR = 'DB create possible match error: ',
     DB_CHECK_USER_MATCH_ERROR = 'DB check user match error: ',
     DB_SAVE_CHAT_MESSAGE_ERROR = 'DB save chat message error: ',
+    DB_UPDATE_MATCH_SCORE_ERROR = 'DB update match score error: ',
     
     EMAIL_SEND_ERROR = 'Email send error: '
 }
