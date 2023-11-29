@@ -19,10 +19,6 @@ export default {
         database: process.env.DB_NAME || 'postgres',
         password: process.env.DB_PASSWORD || 'postgres'
     },
-    privateKey: {
-        access: process.env.PRIVATE_KEY_ACCESS || 'TEMP_PRIVATE_KEY',
-        refresh: process.env.PRIVATE_KEY_REFRESH || 'TEMP_PRIVATE_KEY'
-    },
     aws: {
         accessKeyId: process.env.AWS_ACCESS_KEY || 'TEMP_KEY',
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'TEMP_SECRET_KEY',
@@ -45,6 +41,9 @@ export default {
         connectTimeout: Number(process.env.REDIS_CONNECT_TIMEOUT) || 30000,
         maxNumberOfMatchQueue: Number(process.env.REDIS_MAX_NUMBER_OF_MATCH_QUEUE) || 10,
         matchQueueItemLimit: Number(process.env.REDIS_MATCH_QUEUE_ITEM_LIMIT) || 100000
+    },
+    token: {
+        publicKey: process.env.TOKEN_PUBLIC_KEY || 'TEMP_PUBLIC_KEY'
     },
     email: process.env.email || 'temp email'
 };
