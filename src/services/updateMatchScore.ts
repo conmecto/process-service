@@ -4,7 +4,7 @@ import { enums, interfaces } from '../utils';
 
 const updateMatchScore = async (matchId: number, sender: number, receiver: number): Promise<boolean> => {
     const query1 = 'SELECT C.id, C.sender FROM (SELECT id, sender FROM chat WHERE match_id=$1 ORDER BY created_at DESC LIMIT 10) AS C WHERE C.sender=$2 LIMIT 1';
-    const query2 = 'UPDATE chat SET score=score+$2 WHERE match_id=$1 AND deleted_at IS NULL';
+    const query2 = 'UPDATE match SET score=score+$2 WHERE id=$1 AND deleted_at IS NULL';
     let res: QueryResult | null = null;
     const client = await getDbClient();
     try {
@@ -22,6 +22,7 @@ const updateMatchScore = async (matchId: number, sender: number, receiver: numbe
         } else {
             params3.push(1);
         }
+        console.log(query2)
         console.log(params3);
         res =  await client.query(query2, params3);
         await client.query('COMMIT');
