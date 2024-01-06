@@ -8,6 +8,7 @@ const processMatchQueue = async (queueIndex: number) => {
     const queueName = Environments.redis.matchQueue + queueIndex;
     const tempQueue: number[] = [];
     let size = await cacheClient.lLen(queueName);
+    console.log('size', size)
     while(size-- > 0) {
         let userId: string | number | null = await cacheClient.rPop(queueName);
         if (!userId) {

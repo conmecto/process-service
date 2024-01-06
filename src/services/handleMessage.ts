@@ -5,11 +5,13 @@ import processMatchQueue from './processMatchQueue';
 import { checkIfQueueProcessing, setQueueProcessingCheck } from './checkIfQueueProcessing';
 
 const handleProcessMatchQueueMessage = async (message: any, channel: string) => {
+    console.log('checkIfQueueProcessing()', checkIfQueueProcessing())
     if (checkIfQueueProcessing()) {
         return;
     }
     setQueueProcessingCheck(true);
     const queueIndex = await findMaxSizeQueue();
+    console.log('queueIndex', queueIndex)
     if (!queueIndex) {
         return;
     }
