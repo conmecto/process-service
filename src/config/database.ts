@@ -17,13 +17,19 @@ const pool = new Pool({
     max: constants.DB_MAX_CLIENTS,
     idleTimeoutMillis: constants.DB_IDLE_TIMEOUT_MILLIS,
     connectionTimeoutMillis: constants.DB_CONNECTION_TIMEOUT_MILLIS,
-    ssl: {
-        ...(Environments.env === 'prod' ? {
-            ca: readFileSync('./key.pem')
-        } : {
-            rejectUnauthorized: false
-        })
-    }
+    ...(Environments.env === 'prod' ? {
+            ssl: {
+                ca: readFileSync('./key.pem')
+            }
+        } : (
+            Environments.env === 'test' ? 
+            {
+                ssl: {
+                    rejectUnauthorized: false
+                }
+            } : {}
+        )
+    )
 });
 
 pool.on('error', (err, client) => {
