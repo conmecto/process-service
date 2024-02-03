@@ -22,10 +22,9 @@ export default {
     aws: {
         accessKeyId: process.env.AWS_ACCESS_KEY || 'TEMP_KEY',
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'TEMP_SECRET_KEY',
-        sesApiVersion: process.env.AWS_SES_API_VERSION || 'TEMP_API_VERSION',
-        s3ApiVersion: process.env.AWS_S3_API_VERSION || 'TEMP_API_VERSION',
+        s3ACL: process.env.AWS_S3_ACL || 'TEMP_S3_ACL',
         s3Region: process.env.AWS_S3_REGION || 'TEMP_REGION',
-        s3Bucket: process.env.AWS_S3_BUCKET || 'TEMP_BUCKET'
+        s3LogBucket: process.env.AWS_S3_LOG_BUCKET || 'TEMP_BUCKET'
     },
     redis: {
         host: process.env.REDIS_HOST || 'REDIS_HOST',
@@ -35,7 +34,8 @@ export default {
         channels: {
             processMatchQueue: process.env.REDIS_CHANNEL_PROCESS_MATCH_QUEUE || 'process-match-queue',
             matchCreated: process.env.REDIS_CHANNEL_MATCH_CREATED || 'match-created',
-            saveMessage: process.env.REDIS_CHANNEL_SAVE_MESSAGE || 'save-message'
+            saveMessage: process.env.REDIS_CHANNEL_SAVE_MESSAGE || 'save-message',
+            logging: process.env.REDIS_CHANNEL_LOGGING || 'logging-channel',
         },
         matchQueue: process.env.MATCH_QUEUE || 'match-queue-',
         connectTimeout: Number(process.env.REDIS_CONNECT_TIMEOUT) || 30000,

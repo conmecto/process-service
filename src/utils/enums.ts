@@ -47,6 +47,12 @@ export enum ErrorCodes {
 }
 
 export enum PrefixesForLogs {
+    AWS_CHECK_BUCKET_ERROR = 'AWS check bucket error: ',
+    AWS_CREATE_BUCKET_ERROR = 'AWS create bucket error: ',
+    AWS_UPLOAD_LOG_FILE_ERROR = 'AWS upload log file error: ', 
+    AWS_REMOVE_LOG_FILE_ERROR = 'AWS remove log file error: ',   
+    LOG_FILE_ERROR = 'Log file error: ',
+    
     REDIS_SET_OBJECT = 'Redis set object error: ',
     REDIS_GET_USER = 'Redis get user error: ', 
     REDIS_GET_OBJECT = 'Redis get object error: ', 
@@ -59,6 +65,8 @@ export enum PrefixesForLogs {
     REDIS_CHANNEL_MESSAGE_RECEIVE_ERROR = 'Redis channel message receive error: ',
     REDIS_PROCESS_MATCH_QUEUE_ERROR = 'Redis process match queue error: ',
     REDIS_CHANNEL_SAVE_MESSAGE_ERROR = 'Redis save chta message error: ',
+    REDIS_CHANNEL_LOG_ERROR = 'Redis channel log error: ',
+    REDIS_LOGGING_CHANNEL_ERROR = 'Redis logging channel error: ',
 
     DB_CONNECTED = 'DB connection successful: ',
     DB_CONNECTION_FAILED = 'DB connection failed: ',
@@ -67,6 +75,8 @@ export enum PrefixesForLogs {
     DB_CHECK_USER_MATCH_ERROR = 'DB check user match error: ',
     DB_SAVE_CHAT_MESSAGE_ERROR = 'DB save chat message error: ',
     DB_UPDATE_MATCH_SCORE_ERROR = 'DB update match score error: ',
+
+    FIND_MAX_SIZE_QUEUE_ERROR = 'Find max size queue error: ',
     
     EMAIL_SEND_ERROR = 'Email send error: '
 }

@@ -3,22 +3,21 @@ import { Environments, enums, constants } from '../utils';
 import findMaxSizeQueue from './maxSizeQueue';
 import processMatchQueue from './processMatchQueue';
 import { checkIfQueueProcessing, setQueueProcessingCheck } from './checkIfQueueProcessing';
+import logger from './logger';
 
 const handleProcessMatchQueueMessage = async (message: any, channel: string) => {
-    console.log('checkIfQueueProcessing()', checkIfQueueProcessing())
     if (checkIfQueueProcessing()) {
         return;
     }
     setQueueProcessingCheck(true);
     const queueIndex = await findMaxSizeQueue();
-    console.log('queueIndex', queueIndex)
     if (!queueIndex) {
         return;
     }
     try {
         await processMatchQueue(queueIndex);
     } catch(error) {
-        console.log(enums.PrefixesForLogs.REDIS_PROCESS_MATCH_QUEUE_ERROR + error);
+        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_PROCESS_MATCH_QUEUE_ERROR + error);
     }
     setQueueProcessingCheck(false);
     setTimeout(async () => {

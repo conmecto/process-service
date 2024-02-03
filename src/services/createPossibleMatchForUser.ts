@@ -1,13 +1,14 @@
 import { QueryResult } from 'pg';
 import { getDbClient } from '../config';
-import { interfaces, enums, helpers, constants } from '../utils';
+import { interfaces, enums, constants } from '../utils';
+import logger from './logger';
 
 const createPossibleMatchForUser = async (userId: number, userSettings: interfaces.IGetSettingObject): Promise<interfaces.ICreatePossibleMatchResponse | null>  => {    
     const searchAge: number[] = [];
     for(let i = userSettings.minSearchAge; i <= userSettings.maxSearchAge; i++) {
         searchAge.push(i);
     }
-    const query1 = `SELECT user_id FROM SETTING WHERE user_id!=$1 AND age IN (${searchAge.join(',')}) AND max_search_age>=$2
+    const query1 = `SELECT user_id FROM setting WHERE user_id!=$1 AND age IN (${searchAge.join(',')}) AND max_search_age>=$2
         AND min_search_age<=$2 AND search_in=$3 AND is_matched=false AND  
         ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
         AND user_id NOT IN 
@@ -29,27 +30,21 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
     try {
         await client.query('BEGIN');
         const params2 = [userSettings.country, userSettings.searchIn, userId];
-        console.log(query1);
-        console.log(params1);
         const user = await client.query(query1, params1);
         if (!user?.rows?.length) {
             throw new Error();
         }
         params2.push(user.rows[0].user_id);
-        console.log(query2);
-        console.log(params2);
         res = await client.query(query2, params2);
         if (!user?.rows?.length) {
             throw new Error();
         }
         const params3 = [userId, user.rows[0].user_id];
-        console.log(query3);
-        console.log(params3);
         await client.query(query3, params3);
         await client.query('COMMIT');
         isMatched = true;
     } catch (error) {
-        console.error(enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + error);
+        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + error);
         await client.query('ROLLBACK');
     } finally {
         client.release();

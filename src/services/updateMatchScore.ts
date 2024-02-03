@@ -9,12 +9,9 @@ const updateMatchScore = async (matchId: number, sender: number, receiver: numbe
     const client = await getDbClient();
     try {
         await client.query('BEGIN');
-        console.log(query1);
         const params1 = [matchId, sender];
-        console.log(params1);
         const user1 = await client.query(query1, params1);
         const params2 = [matchId, receiver];
-        console.log(params2);
         const user2 = await client.query(query1, params2);
         const params3 = [matchId];
         if (user1.rows.length && user2.rows.length) {
@@ -22,12 +19,9 @@ const updateMatchScore = async (matchId: number, sender: number, receiver: numbe
         } else {
             params3.push(1);
         }
-        console.log(query2)
-        console.log(params3);
         res =  await client.query(query2, params3);
         await client.query('COMMIT');
     } catch(error) {
-        console.error(enums.PrefixesForLogs.DB_UPDATE_MATCH_SCORE_ERROR + error);
         await client.query('ROLLBACK');
         throw error;
     } finally {	

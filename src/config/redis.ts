@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 import { Environments, enums } from '../utils';
-import { handleProcessMatchQueueMessage, handleSaveChatMessage } from '../services'
+import { handleProcessMatchQueueMessage, handleSaveChatMessage, handleLogging } from '../services'
 import { checkIfQueueProcessing } from '../services/checkIfQueueProcessing';
 
 const runRedisFile = () => {};
@@ -28,7 +28,6 @@ const redisClient2 = createClient({
 (async function connect() {
     await redisClient1.connect(); 
     console.log(enums.PrefixesForLogs.REDIS_CONNECTION_READY_CLIENT1 + redisClient1.isReady);
-    console.log('queue processing?', checkIfQueueProcessing());
     if (!checkIfQueueProcessing() && redisClient1.isReady) {
         await handleProcessMatchQueueMessage(enums.Messages.MATCH_QUEUE_UPDATED, Environments.redis.channels.processMatchQueue);
     }
@@ -42,6 +41,7 @@ const redisClient2 = createClient({
     console.log(enums.PrefixesForLogs.REDIS_CONNECTION_READY_CLIENT2 + redisClient2.isReady);
     if (redisClient2.isReady) {
         await redisClient2.subscribe(Environments.redis.channels.processMatchQueue, handleProcessMatchQueueMessage);
+        await redisClient2.subscribe(Environments.redis.channels.logging, handleLogging);
     }
 })();
 
