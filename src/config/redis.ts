@@ -31,9 +31,6 @@ const redisClient2 = createClient({
     if (!checkIfQueueProcessing() && redisClient1.isReady) {
         await handleProcessMatchQueueMessage(enums.Messages.MATCH_QUEUE_UPDATED, Environments.redis.channels.processMatchQueue);
     }
-    if (redisClient1.isReady) {
-        await redisClient2.subscribe(Environments.redis.channels.saveMessage, handleSaveChatMessage);
-    }
 })();
 
 (async function connect() {
@@ -42,6 +39,7 @@ const redisClient2 = createClient({
     if (redisClient2.isReady) {
         await redisClient2.subscribe(Environments.redis.channels.processMatchQueue, handleProcessMatchQueueMessage);
         await redisClient2.subscribe(Environments.redis.channels.logging, handleLogging);
+        await redisClient2.subscribe(Environments.redis.channels.saveMessage, handleSaveChatMessage);
     }
 })();
 
