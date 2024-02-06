@@ -14,7 +14,7 @@ const handleSaveChatMessage = async (data: any, channel: string) => {
             updateMatchScore(matchIdNum, sender, receiver)
         ]);
     } catch(error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_CHANNEL_SAVE_MESSAGE_ERROR + error);
+        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_CHANNEL_SAVE_MESSAGE_ERROR + JSON.stringify(error));
     }
 }
 
