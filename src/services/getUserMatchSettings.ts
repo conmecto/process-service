@@ -12,7 +12,7 @@ const getUserMatchSettings = async (userId: number): Promise<interfaces.IGetSett
     try {
         res = await client.query(query, params);
     } catch(error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.DB_GET_MATCH_SETTING_ERROR + JSON.stringify(error));
+        await logger('Process Service: ' + enums.PrefixesForLogs.DB_GET_MATCH_SETTING_ERROR + error?.toString());
     } finally {	
         client.release();
     }  

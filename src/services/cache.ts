@@ -9,7 +9,7 @@ const setKey = async (key: string, value: string): Promise<boolean | null> => {
             res = await cacheClient.set(key.toLocaleLowerCase(), value);
         } 
     } catch(err) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_SET_OBJECT + <string>JSON.stringify(err));
+        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_SET_OBJECT + <string>err?.toString());
     }
     return Boolean(res);
 }
@@ -21,7 +21,7 @@ const getKey = async (key: string): Promise<string | null> => {
             value = await cacheClient.get(key);
         }
     } catch(err) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_GET_OBJECT + JSON.stringify(err));
+        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_GET_OBJECT + err?.toString());
     }
     return value;
 }

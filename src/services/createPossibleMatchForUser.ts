@@ -44,7 +44,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         await client.query('COMMIT');
         isMatched = true;
     } catch (error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + JSON.stringify(error));
+        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + error?.toString());
         await client.query('ROLLBACK');
     } finally {
         client.release();
