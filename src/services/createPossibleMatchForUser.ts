@@ -3,7 +3,7 @@ import { getDbClient } from '../config';
 import { interfaces, enums, constants } from '../utils';
 import logger from './logger';
 
-const createPossibleMatchForUser = async (userId: number, userSettings: interfaces.IGetSettingObject): Promise<interfaces.ICreatePossibleMatchResponse | null>  => {    
+const createPossibleMatchForUser = async (userId: number, userSettings: interfaces.IGetSettingObject): Promise<interfaces.ICreatePossibleMatchResponse | null>  => { 
     const searchAge: number[] = [];
     for(let i = userSettings.minSearchAge; i <= userSettings.maxSearchAge; i++) {
         searchAge.push(i);
@@ -44,7 +44,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         await client.query('COMMIT');
         isMatched = true;
     } catch (error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + error?.toString());
+        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + userId?.toString() + ' ' + error?.toString());
         await client.query('ROLLBACK');
     } finally {
         client.release();
