@@ -38,10 +38,6 @@ pool.on('error', (err, client) => {
     console.error(enums.PrefixesForLogs.DB_CONNECTION_FAILED + err);
 })
 
-pool.on('connect', () => {
-    console.error(enums.PrefixesForLogs.DB_CONNECTED);
-})
-
 const getDbClient = async (): Promise<PoolClient> => {
     const client = await pool.connect();
     if (!client) {
