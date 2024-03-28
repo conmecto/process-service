@@ -24,7 +24,7 @@ const processMatchQueue = async (queueIndex: number) => {
             tempQueue.push(userId);    
             continue;
         } 
-        //await cacheClient.publish(Environments.redis.channels.matchCreated, possibleMatch.matchId?.toString());
+        await cacheClient.publish(Environments.redis.channels.matchCreatedNotification, Buffer.from(JSON.stringify({ userId })));
     }
     tempQueue.forEach(async id => {
         await cacheClient.lPush(queueName, id?.toString()); 

@@ -36,6 +36,7 @@ export default {
             matchCreated: process.env.REDIS_CHANNEL_MATCH_CREATED || 'match-created',
             saveMessage: process.env.REDIS_CHANNEL_SAVE_MESSAGE || 'save-message',
             logging: process.env.REDIS_CHANNEL_LOGGING || 'logging-channel',
+            matchCreatedNotification: 'match-created-notification'
         },
         matchQueue: process.env.MATCH_QUEUE || 'match-queue-',
         connectTimeout: Number(process.env.REDIS_CONNECT_TIMEOUT) || 30000,
