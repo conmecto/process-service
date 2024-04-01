@@ -10,14 +10,16 @@ const handleProcessMatchQueueMessage = async (message: any, channel: string) => 
         return;
     }
     setQueueProcessingCheck(true);
-    const queueIndex = await findMaxSizeQueue();
-    if (!queueIndex) {
-        return;
-    }
-    try {
-        await processMatchQueue(queueIndex);
-    } catch(error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_PROCESS_MATCH_QUEUE_ERROR + error?.toString());
+    // const queueIndex = await findMaxSizeQueue();
+    // if (!queueIndex) {
+    //     return;
+    // }
+    for(let queueIndex = 1; queueIndex <= Environments.redis.maxNumberOfMatchQueue; queueIndex++) {
+        try {
+            await processMatchQueue(queueIndex);
+        } catch(error) {
+            await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_PROCESS_MATCH_QUEUE_ERROR + error?.toString());
+        }
     }
     setQueueProcessingCheck(false);
     setTimeout(async () => {
