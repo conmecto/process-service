@@ -75,6 +75,7 @@ export enum PrefixesForLogs {
     DB_CHECK_USER_MATCH_ERROR = 'DB check user match error: ',
     DB_SAVE_CHAT_MESSAGE_ERROR = 'DB save chat message error: ',
     DB_UPDATE_MATCH_SCORE_ERROR = 'DB update match score error: ',
+    DB_CHECK_USER_MATCH_POSSIBLE = 'DB check user match possible error: ',
 
     FIND_MAX_SIZE_QUEUE_ERROR = 'Find max size queue error: ',
     

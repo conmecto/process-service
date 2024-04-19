@@ -1,4 +1,5 @@
 import pg, { Pool, PoolClient } from 'pg';
+import pgvector from 'pgvector/pg';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { Environments, constants, enums } from '../utils';
@@ -36,7 +37,12 @@ pg.types.setTypeParser(timestampzOid, function (value) {
 
 pool.on('error', (err, client) => {
     console.error(enums.PrefixesForLogs.DB_CONNECTION_FAILED + err);
-})
+});
+
+pool.on('connect', async function (client) {
+    await client.query('CREATE EXTENSION IF NOT EXISTS vector');
+    await pgvector.registerType(client);
+});
 
 const getDbClient = async (): Promise<PoolClient> => {
     const client = await pool.connect();

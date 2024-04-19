@@ -8,22 +8,40 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
     for(let i = userSettings.minSearchAge; i <= userSettings.maxSearchAge; i++) {
         searchAge.push(i);
     }
-    const query1 = `SELECT user_id FROM setting WHERE user_id!=$1 AND age IN (${searchAge.join(',')}) AND max_search_age>=$2
-        AND min_search_age<=$2 AND search_in=$3 AND is_matched=false AND  
-        ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
-        AND user_id NOT IN 
-        (
-            (SELECT user_id_1 as blocked_user FROM match_block WHERE user_id_2=$1)
-            UNION 
-            (SELECT user_id_2 as blocked_user FROM match_block WHERE user_id_1=$1)
-        )
-        ORDER BY avg_match_time DESC
-        LIMIT 1`;
+    // const query1 = `SELECT user_id FROM setting WHERE user_id!=$1 AND age IN (${searchAge.join(',')}) AND max_search_age>=$2
+    //     AND min_search_age<=$2 AND search_in=$3 AND is_matched=false AND  
+    //     ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
+    //     AND user_id NOT IN 
+    //     (
+    //         (SELECT user_id_1 as blocked_user FROM match_block WHERE user_id_2=$1)
+    //         UNION 
+    //         (SELECT user_id_2 as blocked_user FROM match_block WHERE user_id_1=$1)
+    //     )
+    //     ORDER BY avg_match_time DESC
+    //     LIMIT 10`;
         //        ORDER BY active_score_second DESC, avg_match_time DESC
+    const query1 = `
+        WITH filter_query AS (
+            SELECT s.user_id, e.embedding
+            FROM setting s 
+            LEFT JOIN embeddings e ON s.user_id=e.user_id
+            WHERE s.user_id!=$1 AND s.age IN (${searchAge.join(',')}) AND s.max_search_age>=$2
+            AND s.min_search_age<=$2 AND s.search_in=$3 AND s.is_matched=false AND  
+            ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
+            AND s.user_id NOT IN 
+            (
+                (SELECT user_id_1 as blocked_user FROM match_block WHERE user_id_2=$1)
+                UNION 
+                (SELECT user_id_2 as blocked_user FROM match_block WHERE user_id_1=$1)
+            )
+            ORDER BY s.avg_match_time DESC
+            LIMIT 50
+        )
+        SELECT f.user_id FROM filter_query f ORDER BY (f.embedding <=> (SELECT embedding FROM embeddings WHERE user_id=$1)) LIMIT 1
+    `;
     const query2 = 'INSERT INTO match(country, city, user_id_1, user_id_2) VALUES ($1, $2, $3, $4) RETURNING match.id';
     const query3 = 'UPDATE setting SET is_matched=true, current_queue=NULL WHERE user_id=$1 OR user_id=$2';
     const params1 = [userId, userSettings.age, userSettings.searchIn];
-
     let res: QueryResult | null = null;
     let isMatched = false;
     const client = await getDbClient();

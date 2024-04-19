@@ -26,6 +26,7 @@ interface IBaseModel {
 }
 
 interface IGetSettingObject {
+    id: number,
     age: number,
     city?: string,
     country: string, 
@@ -34,6 +35,8 @@ interface IGetSettingObject {
     gender: string,
     minSearchAge: number,
     maxSearchAge: number,
+    matchId: number,
+    embeddingId: number
 }
 
 interface ICreatePossibleMatchResponse {

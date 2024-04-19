@@ -1,8 +1,9 @@
 import { redisClient1 as cacheClient } from '../config';
 import { Environments } from '../utils';
-import getUserMatchSettings from './getUserMatchSettings';
+import checkUserMatchPossible from './checkUserMatchPossible';
+// import getUserMatchSettings from './getUserMatchSettings';
 import createPossibleMatchForUser from './createPossibleMatchForUser';
-import checkUserMatch from './checkUserMatch';
+//import checkUserMatch from './checkUserMatch';
 
 const processMatchQueue = async (queueIndex: number) => {
     const queueName = Environments.redis.matchQueue + queueIndex;
@@ -14,11 +15,10 @@ const processMatchQueue = async (queueIndex: number) => {
             continue;
         }
         userId = Number(userId);
-        const userMatchSetting = await getUserMatchSettings(userId);
-        const isUserMatched = await checkUserMatch(userId);
-        if (!userMatchSetting || isUserMatched) {
+        const userMatchSetting = await checkUserMatchPossible(userId);
+        if (!userMatchSetting || userMatchSetting.matchId || !userMatchSetting.embeddingId) {
             continue;
-        } 
+        }
         const possibleMatch = await createPossibleMatchForUser(userId, userMatchSetting);
         if (!possibleMatch) {
             tempQueue.push(userId);    
