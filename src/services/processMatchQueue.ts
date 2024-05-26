@@ -16,15 +16,15 @@ const processMatchQueue = async (queueIndex: number) => {
         }
         userId = Number(userId);
         const userMatchSetting = await checkUserMatchPossible(userId);
-        if (!userMatchSetting || userMatchSetting.matchId || !userMatchSetting.embeddingId) {
+        if (!userMatchSetting || userMatchSetting.activeMatchesCount >= userMatchSetting.maxMatchesAllowed) {
+            tempQueue.push(userId); 
             continue;
         }
         const possibleMatch = await createPossibleMatchForUser(userId, userMatchSetting);
-        if (!possibleMatch) {
-            tempQueue.push(userId);    
-            continue;
+        if (possibleMatch) {
+            await cacheClient.publish(Environments.redis.channels.matchCreatedNotification, Buffer.from(JSON.stringify({ userId })));
         } 
-        await cacheClient.publish(Environments.redis.channels.matchCreatedNotification, Buffer.from(JSON.stringify({ userId })));
+        tempQueue.push(userId); 
     }
     tempQueue.forEach(async id => {
         await cacheClient.lPush(queueName, id?.toString()); 
