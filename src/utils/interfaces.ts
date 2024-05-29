@@ -48,6 +48,8 @@ interface ISaveMessageData {
     receiver: number,
     matchId: number,
     message: string,
+    event: string,
+    fileData: Record<string, any>
 }
 
 export { 

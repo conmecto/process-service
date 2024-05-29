@@ -64,7 +64,7 @@ export enum PrefixesForLogs {
     REDIS_SUBSCRIBE_CHANNEL_ERROR = 'Redis subscribe channel error: ',
     REDIS_CHANNEL_MESSAGE_RECEIVE_ERROR = 'Redis channel message receive error: ',
     REDIS_PROCESS_MATCH_QUEUE_ERROR = 'Redis process match queue error: ',
-    REDIS_CHANNEL_SAVE_MESSAGE_ERROR = 'Redis save chta message error: ',
+    REDIS_CHANNEL_SAVE_MESSAGE_ERROR = 'Redis save chat message error: ',
     REDIS_CHANNEL_LOG_ERROR = 'Redis channel log error: ',
     REDIS_LOGGING_CHANNEL_ERROR = 'Redis logging channel error: ',
 
@@ -84,4 +84,11 @@ export enum PrefixesForLogs {
 
 export enum Messages {
     MATCH_QUEUE_UPDATED = 'Match queue updated',
+}
+
+export enum ChatSocketEvents {
+    SAVE_MESSAGE = 'save-message',
+    SAVE_FILE = 'save-file',
+    MARK_MESSAGES_AS_READ = 'mark-messages-as-read',
+    MESSAGE_RECEIVED = 'message-received'
 }
