@@ -5,25 +5,16 @@ import { interfaces, enums } from '../utils';
 import logger from './logger';
 
 const checkUserMatchPossible = async (userId: number): Promise<interfaces.IGetSettingObject> => {
-    // const query = `
-    //     SELECT id, age, country, gender, max_search_age, min_search_age, search_for, 
-    //     search_in, m.id as match_id, e.id as embedding_id 
-    //     FROM setting s 
-    //     LEFT JOIN LATERAL (
-    //         SELECT id 
-    //         FROM match m 
-    //         WHERE (m.user_id_1 = s.user_id OR m.user_id_2 = s.user_id) AND m.ended=false 
-    //         ORDER BY m.created_at 
-    //         DESC LIMIT 1
-    //     ) m ON true 
-    //     LEFT JOIN embeddings e ON (e.user_id = s.user_id) 
-    //     WHERE s.user_id=$1
-    // `;
     const query = `
         SELECT id, age, country, gender, max_search_age, min_search_age, search_for, 
         search_in, max_matches_allowed, active_matches_count
         FROM setting s
-        WHERE s.user_id=$1
+        WHERE s.user_id IN (
+            SELECT e.user_id
+            FROM embeddings e
+            WHERE e.user_id=$1
+            LIMIT 1
+        )
     `;
     const params = [userId];
     let res: QueryResult | null = null;

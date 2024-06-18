@@ -4,45 +4,39 @@ import { interfaces, enums, constants } from '../utils';
 import logger from './logger';
 
 const createPossibleMatchForUser = async (userId: number, userSettings: interfaces.IGetSettingObject): Promise<interfaces.ICreatePossibleMatchResponse | null>  => { 
-    const searchAge: number[] = [];
-    for(let i = userSettings.minSearchAge; i <= userSettings.maxSearchAge; i++) {
-        searchAge.push(i);
-    }
-    // const query1 = `SELECT user_id FROM setting WHERE user_id!=$1 AND age IN (${searchAge.join(',')}) AND max_search_age>=$2
-    //     AND min_search_age<=$2 AND search_in=$3 AND is_matched=false AND  
-    //     ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
-    //     AND user_id NOT IN 
-    //     (
-    //         (SELECT user_id_1 as blocked_user FROM match_block WHERE user_id_2=$1)
-    //         UNION 
-    //         (SELECT user_id_2 as blocked_user FROM match_block WHERE user_id_1=$1)
-    //     )
-    //     ORDER BY avg_match_time DESC
-    //     LIMIT 10`;
-        //        ORDER BY active_score_second DESC, avg_match_time DESC
-    // const query1 = `
-    //     WITH filter_query AS (
-    //         SELECT s.user_id, e.embedding
-    //         FROM setting s 
-    //         LEFT JOIN embeddings e ON s.user_id=e.user_id
-    //         WHERE s.user_id!=$1 AND s.age IN (${searchAge.join(',')}) AND s.max_search_age>=$2
-    //         AND s.min_search_age<=$2 AND s.search_in=$3 AND s.is_matched=false AND  
-    //         ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
-    //         AND s.user_id NOT IN 
-    //         (
-    //             (SELECT user_id_1 as blocked_user FROM match_block WHERE user_id_2=$1)
-    //             UNION 
-    //             (SELECT user_id_2 as blocked_user FROM match_block WHERE user_id_1=$1)
-    //         )
-    //         ORDER BY s.avg_match_time DESC
-    //         LIMIT 50
-    //     )
-    //     SELECT f.user_id FROM filter_query f ORDER BY (f.embedding <=> (SELECT embedding FROM embeddings WHERE user_id=$1)) LIMIT 1
-    // `;
-    const query1 = 'SELECT user_id FROM setting WHERE user_id<>$1 AND active_matches_count < max_matches_allowed ORDER BY created_at ASC';
+    const params1 = [userId, userSettings.minSearchAge, userSettings.maxSearchAge, userSettings.age, userSettings.searchIn];
+    const query1 = `
+        WITH user_embedding_query AS (
+            SELECT id, embedding 
+            FROM embeddings 
+            WHERE user_id=$1 
+            ORDER BY random() 
+            LIMIT 1
+        )
+        SELECT e.user_id, e.id, (SELECT u.id FROM user_embedding_query u) AS user_embedding_id
+        FROM embeddings e
+        LEFT JOIN setting s ON s.user_id = e.user_id
+        WHERE e.user_id!=$1 AND s.age>=$2 AND s.age<=$3 AND 
+        s.max_search_age>=$4 AND s.min_search_age<=$4 AND s.search_in=$5 AND
+        s.active_matches_count < max_matches_allowed AND   
+        ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
+        AND s.user_id NOT IN 
+        (
+            SELECT 
+            CASE 
+                WHEN user_id_1=$1 THEN user_id_2
+                ELSE user_id_1
+            END as blocked_user 
+            FROM match_block 
+            WHERE (user_id_1=$1 OR user_id_2=$1)
+        )
+        ORDER BY (
+            e.embedding <=> (SELECT u.embedding FROM user_embedding_query u)
+        ) 
+        LIMIT 1
+    `;
     const query2 = 'INSERT INTO match(country, city, user_id_1, user_id_2) VALUES ($1, $2, $3, $4) RETURNING match.id';
     const query3 = 'UPDATE setting SET active_matches_count=active_matches_count+1 WHERE user_id=$1 OR user_id=$2';
-    const params1 = [userId, userSettings.age, userSettings.searchIn];
     let res: QueryResult | null = null;
     let isMatched = false;
     const client = await getDbClient();
