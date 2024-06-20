@@ -1,13 +1,11 @@
 import { redisClient1 as cacheClient } from '../config';
 import { Environments } from '../utils';
 import checkUserMatchPossible from './checkUserMatchPossible';
-// import getUserMatchSettings from './getUserMatchSettings';
 import createPossibleMatchForUser from './createPossibleMatchForUser';
-//import checkUserMatch from './checkUserMatch';
 
-const processMatchQueue = async (queueIndex: number) => {
-    const queueName = Environments.redis.matchQueue + queueIndex;
+const processMatchQueue = async () => {
     const tempQueue: number[] = [];
+    const queueName = Environments.redis.matchQueue;
     let size = await cacheClient.lLen(queueName);
     while(size-- > 0) {
         let userId: string | number | null = await cacheClient.rPop(queueName);

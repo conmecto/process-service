@@ -39,7 +39,7 @@ export default {
             matchCreatedNotification: 'match-created-notification',
             userAccountRemoved: 'user-account-removed'
         },
-        matchQueue: process.env.MATCH_QUEUE || 'match-queue-',
+        matchQueue: process.env.MATCH_QUEUE || 'match-queue',
         connectTimeout: Number(process.env.REDIS_CONNECT_TIMEOUT) || 30000,
         maxNumberOfMatchQueue: Number(process.env.REDIS_MAX_NUMBER_OF_MATCH_QUEUE) || 10,
         matchQueueItemLimit: Number(process.env.REDIS_MATCH_QUEUE_ITEM_LIMIT) || 100000
