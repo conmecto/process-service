@@ -67,6 +67,7 @@ export enum PrefixesForLogs {
     REDIS_CHANNEL_SAVE_MESSAGE_ERROR = 'Redis save chat message error: ',
     REDIS_CHANNEL_LOG_ERROR = 'Redis channel log error: ',
     REDIS_LOGGING_CHANNEL_ERROR = 'Redis logging channel error: ',
+    REDIS_CHANNEL_ACCOUNT_REMOVED_MESSAGE_ERROR = 'Redis channel account removed message error: ',
 
     DB_CONNECTED = 'DB connection successful: ',
     DB_CONNECTION_FAILED = 'DB connection failed: ',

@@ -1,6 +1,6 @@
 import { createClient } from 'redis';
 import { Environments, enums } from '../utils';
-import { handleProcessMatchQueueMessage, handleSaveChatMessage, handleLogging } from '../services'
+import { handleProcessMatchQueueMessage, handleSaveChatMessage, handleLogging, handleAccountRemovedMessage } from '../services'
 import { checkIfQueueProcessing } from '../services/checkIfQueueProcessing';
 
 const runRedisFile = () => {};
@@ -40,6 +40,7 @@ const redisClient2 = createClient({
         await redisClient2.subscribe(Environments.redis.channels.processMatchQueue, handleProcessMatchQueueMessage);
         await redisClient2.subscribe(Environments.redis.channels.logging, handleLogging);
         await redisClient2.subscribe(Environments.redis.channels.saveMessage, handleSaveChatMessage);
+        await redisClient2.subscribe(Environments.redis.channels.userAccountRemoved, handleAccountRemovedMessage);
     }
 })();
 

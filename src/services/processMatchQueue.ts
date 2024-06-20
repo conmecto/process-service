@@ -16,7 +16,10 @@ const processMatchQueue = async (queueIndex: number) => {
         }
         userId = Number(userId);
         const userMatchSetting = await checkUserMatchPossible(userId);
-        if (!userMatchSetting || userMatchSetting.activeMatchesCount >= userMatchSetting.maxMatchesAllowed) {
+        if (!userMatchSetting) {
+            continue;
+        }
+        if (userMatchSetting.activeMatchesCount >= userMatchSetting.maxMatchesAllowed) {
             tempQueue.push(userId); 
             continue;
         }

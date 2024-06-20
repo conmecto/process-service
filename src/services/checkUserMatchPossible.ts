@@ -14,7 +14,7 @@ const checkUserMatchPossible = async (userId: number): Promise<interfaces.IGetSe
             FROM embeddings e
             WHERE e.user_id=$1
             LIMIT 1
-        )
+        ) AND deleted_at IS NULL
     `;
     const params = [userId];
     let res: QueryResult | null = null;
