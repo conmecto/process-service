@@ -21,8 +21,12 @@ const findMaxSizeQueue = async () => {
         if (checkIfAllQueueEmpty) {
             return null;
         }
-    } catch(error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.FIND_MAX_SIZE_QUEUE_ERROR + error?.toString());
+    } catch(error: any) {
+        const errorString = JSON.stringify({
+            stack: error?.stack,
+            message: error?.toString()
+        });
+        await logger('Process Service: ' + enums.PrefixesForLogs.FIND_MAX_SIZE_QUEUE_ERROR + errorString);
     }
     return queueIndex;
 }

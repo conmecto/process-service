@@ -13,8 +13,12 @@ const handleSaveChatMessage = async (data: any, channel: string) => {
             saveChatMessage({ sender, receiver, message, matchId: matchIdNum, event, fileData }),
             updateMatchScore(matchIdNum, sender, receiver, event === enums.ChatSocketEvents.SAVE_FILE)
         ]);
-    } catch(error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_CHANNEL_SAVE_MESSAGE_ERROR + error?.toString());
+    } catch(error: any) {
+        const errorString = JSON.stringify({
+            stack: error?.stack,
+            message: error?.toString()
+        });
+        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_CHANNEL_SAVE_MESSAGE_ERROR + errorString);
     }
 }
 

@@ -56,8 +56,12 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         await client.query(query3, params3);
         await client.query('COMMIT');
         isMatched = true;
-    } catch (error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + userId?.toString() + ' ' + error?.toString());
+    } catch (error: any) {
+        // const errorString = JSON.stringify({
+        //     stack: error?.stack,
+        //     message: error?.toString()
+        // });
+        // await logger('Process Service: ' + enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + userId?.toString() + ' ' + errorString);
         await client.query('ROLLBACK');
     } finally {
         client.release();

@@ -10,8 +10,12 @@ const checkUserMatch = async (userId: number): Promise<boolean> => {
     const client = await getDbClient();
     try {
         res = await client.query(query, params);
-    } catch(error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CHECK_USER_MATCH_ERROR + error?.toString());
+    } catch(error: any) {
+        const errorString = JSON.stringify({
+            stack: error?.stack,
+            message: error?.toString()
+        });
+        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CHECK_USER_MATCH_ERROR + errorString);
     } finally {	
         client.release();
     } 

@@ -24,6 +24,15 @@ export default class CustomError extends Error {
         }
     }
 
+    get loggingErrorObject() {
+        return {
+            status: this.status,
+            error: this.error,
+            errorCode: this.errorCode,
+            stack: this.stack
+        }
+    }
+
     set apiPath(path: string) {
         this.path = path;
     }

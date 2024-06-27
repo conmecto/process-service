@@ -8,8 +8,12 @@ const handleAccountRemovedMessage = async (message: any, channel: string) => {
         if (Environments.redis.channels.userAccountRemoved === channel && userId) {
             await removeSetting(Number(userId));
         }
-    } catch(err) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_CHANNEL_MESSAGE_RECEIVE_ERROR + err?.toString());
+    } catch(error: any) {
+        const errorString = JSON.stringify({
+            stack: error?.stack,
+            message: error?.toString()
+        });
+        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_CHANNEL_MESSAGE_RECEIVE_ERROR + errorString);
     }
 }
 

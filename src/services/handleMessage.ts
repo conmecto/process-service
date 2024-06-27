@@ -11,8 +11,12 @@ const handleProcessMatchQueueMessage = async (message: any, channel: string) => 
     setQueueProcessingCheck(true);
     try {
         await processMatchQueue();
-    } catch(error) {
-        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_PROCESS_MATCH_QUEUE_ERROR + error?.toString());
+    } catch(error: any) {
+        const errorString = JSON.stringify({
+            stack: error?.stack,
+            message: error?.toString()
+        });
+        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_PROCESS_MATCH_QUEUE_ERROR + errorString);
     }
     setQueueProcessingCheck(false);
     setTimeout(async () => {
