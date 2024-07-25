@@ -29,24 +29,23 @@ const saveChatMessage = async (data: interfaces.ISaveMessageData) => {
 
 const saveChatMessageWithFile = async (data: interfaces.ISaveMessageData) => {
     const { sender, fileData, receiver, matchId, message } = data;
-    let query1Start = 'INSERT INTO file_metadata(user_id';
-    let query1End = ') VALUES ($1';
-    let count = 2;
-    const params1: (string | undefined | number)[] = [sender];
-    for(const key in fileData) {
-        query1Start += `, ${key}`;
-        query1End += `, $${count}`;
-        params1.push(fileData[key]);
-        count += 1;
-    }
-    const query1 = query1Start + query1End + ') RETURNING file_metadata.id';
+    const keys = Object.keys(fileData);
+    const values = keys.map((key, index) => `$${index+2}`).join(',');
+    const query1 = `
+        INSERT INTO 
+        file_metadata
+        (user_id,${keys.join(',')})
+        VALUES ($1,${values})
+        RETURNING file_metadata.id
+    `;
+    const params1 = [sender, ...Object.values(fileData)];
     const query2 = `
         INSERT INTO chat
         (sender, receiver, match_id, type, message, location, file_metadata_id) 
         VALUES($1, $2, $3, $4, $5, $6, $7) 
         RETURNING chat.id
     `;
-    const params2 = [sender, receiver, matchId, 'image', message, fileData.location];
+    const params2 = [sender, receiver, matchId, 'image', message, fileData.key];
     let res: QueryResult | null = null;
     const client = await getDbClient();
     try {
