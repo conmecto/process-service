@@ -15,7 +15,7 @@ const checkUserMatch = async (userId: number): Promise<boolean> => {
             stack: error?.stack,
             message: error?.toString()
         });
-        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CHECK_USER_MATCH_ERROR + errorString);
+        await logger(enums.PrefixesForLogs.DB_CHECK_USER_MATCH_ERROR + errorString);
     } finally {	
         client.release();
     } 

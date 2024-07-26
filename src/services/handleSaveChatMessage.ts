@@ -18,7 +18,7 @@ const handleSaveChatMessage = async (data: any, channel: string) => {
             stack: error?.stack,
             message: error?.toString()
         });
-        await logger('Process Service: ' + enums.PrefixesForLogs.REDIS_CHANNEL_SAVE_MESSAGE_ERROR + errorString);
+        await logger(enums.PrefixesForLogs.REDIS_CHANNEL_SAVE_MESSAGE_ERROR + errorString);
     }
 }
 

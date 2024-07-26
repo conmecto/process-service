@@ -5,7 +5,7 @@ import { interfaces, enums } from '../utils';
 import logger from './logger';
 
 const getUserMatchSettings = async (userId: number): Promise<interfaces.IGetSettingObject> => {
-    const query = 'SELECT age, country, gender, max_search_age, min_search_age, search_for, search_in FROM setting WHERE user_id=$1';
+    const query = 'SELECT age, gender, max_search_age, min_search_age, search_for FROM setting WHERE user_id=$1';
     const params = [userId];
     let res: QueryResult | null = null;
     const client = await getDbClient();
@@ -16,7 +16,7 @@ const getUserMatchSettings = async (userId: number): Promise<interfaces.IGetSett
             stack: error?.stack,
             message: error?.toString()
         });
-        await logger('Process Service: ' + enums.PrefixesForLogs.DB_GET_MATCH_SETTING_ERROR + errorString);
+        await logger(enums.PrefixesForLogs.DB_GET_MATCH_SETTING_ERROR + errorString);
     } finally {	
         client.release();
     }  

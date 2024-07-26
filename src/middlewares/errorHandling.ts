@@ -7,9 +7,9 @@ export const errorHandler: ErrorRequestHandler = async (error: any, req: Request
     if (error instanceof CustomError) {
         newError = error;
         const errorObj = error.loggingErrorObject;
-        await logger('Process Service: Error handler: ' + JSON.stringify(errorObj));
+        await logger('Error handler: ' + JSON.stringify(errorObj));
     } else {
-        await logger('Process Service: Error handler: ' + JSON.stringify({
+        await logger('Error handler: ' + JSON.stringify({
             message: error?.toString(),
             stack: error?.stack 
         }));

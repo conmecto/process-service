@@ -3,6 +3,7 @@ import { redisClient1 as pubClient } from '../config';
 
 const logger = async (error: string) => {
     try {
+        error = 'Process Service: ' + error;
         const channel = Environments.redis.channels.logging;
         const check = pubClient?.isReady && channel;
     if (Environments.env !== 'prod' || !check) {
