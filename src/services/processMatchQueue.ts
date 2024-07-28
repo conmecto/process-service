@@ -2,6 +2,7 @@ import { redisClient1 as cacheClient } from '../config';
 import { Environments } from '../utils';
 import checkUserMatchPossible from './checkUserMatchPossible';
 import createPossibleMatchForUser from './createPossibleMatchForUser';
+import { findNearbyUsers } from './geohash';
 
 const processMatchQueue = async () => {
     const tempQueue: number[] = [];
@@ -15,15 +16,24 @@ const processMatchQueue = async () => {
         userId = Number(userId);
         const userMatchSetting = await checkUserMatchPossible(userId);
         if (!userMatchSetting) {
-            continue;
-        }
-        if (userMatchSetting.activeMatchesCount >= userMatchSetting.maxMatchesAllowed) {
             tempQueue.push(userId); 
             continue;
         }
-        const possibleMatch = await createPossibleMatchForUser(userId, userMatchSetting);
+        const nearbyUsers = await findNearbyUsers(userId, userMatchSetting.geohash, userMatchSetting.searchArea);
+        if (!nearbyUsers || !Object.keys(nearbyUsers).length) {
+            tempQueue.push(userId); 
+            continue;
+        }
+        const possibleMatch = await createPossibleMatchForUser(userId, userMatchSetting, nearbyUsers);
         if (possibleMatch) {
-            await cacheClient.publish(Environments.redis.channels.matchCreatedNotification, Buffer.from(JSON.stringify({ userId })));
+            await cacheClient.publish(
+                Environments.redis.channels.matchCreatedNotification, 
+                Buffer.from(JSON.stringify({ userId }))
+            );
+            await cacheClient.publish(
+                Environments.redis.channels.matchCreatedNotification, 
+                Buffer.from(JSON.stringify({ userId: possibleMatch.matchedUserId }))
+            );
         } 
         tempQueue.push(userId); 
     }

@@ -1,20 +1,24 @@
 import { QueryResult } from 'pg';
-import { omit } from 'lodash';
 import { getDbClient } from '../config';
-import { interfaces, enums } from '../utils';
+import { interfaces, enums, helpers } from '../utils';
 import logger from './logger';
 
-const checkUserMatchPossible = async (userId: number): Promise<interfaces.IGetSettingObject> => {
+const checkUserMatchPossible = async (userId: number) => {
     const query = `
-        SELECT id, age, country, gender, max_search_age, min_search_age, search_for, 
-        search_in, max_matches_allowed, active_matches_count
+        SELECT s.id, s.age, s.gender, s.max_search_age, s.min_search_age, s.search_for, 
+        s.max_matches_allowed, s.active_matches_count, ls.search_area, ls.geohash, ls.country
         FROM setting s
-        WHERE s.user_id IN (
+        LEFT JOIN location_setting ls ON s.user_id=ls.user_id
+        WHERE 
+        s.active_matches_count < s.max_matches_allowed AND 
+        ls.geohash IS NOT NULL AND 
+        s.user_id IN (
             SELECT e.user_id
             FROM embeddings e
             WHERE e.user_id=$1
             LIMIT 1
-        ) AND deleted_at IS NULL
+        ) AND 
+        s.deleted_at IS NULL
     `;
     const params = [userId];
     let res: QueryResult | null = null;
@@ -26,23 +30,15 @@ const checkUserMatchPossible = async (userId: number): Promise<interfaces.IGetSe
             stack: error?.stack,
             message: error?.toString()
         });
-        await logger('Process Service: ' + enums.PrefixesForLogs.DB_CHECK_USER_MATCH_POSSIBLE + errorString);
+        await logger(enums.PrefixesForLogs.DB_CHECK_USER_MATCH_POSSIBLE + errorString);
     } finally {	
         client.release();
     }  
     const setting = res?.rows[0];  
     if (setting) {
-        return <interfaces.IGetSettingObject>omit({
-            ...setting,
-            maxSearchAge: setting?.max_search_age,
-            minSearchAge: setting?.min_search_age,
-            searchFor: setting?.search_for,
-            searchIn: setting?.search_in,
-            activeMatchesCount: setting?.active_matches_count,
-            maxMatchesAllowed: setting?.max_matches_allowed
-        }, ['max_search_age', 'min_search_age', 'search_in', 'search_for', 'max_matches_allowed', 'active_matches_count']);
+        return helpers.formatDbQueryResponse<interfaces.IGetSettingObject>(setting);
     } 
-    return setting;
+    return null;
 }
 
 export default checkUserMatchPossible;

@@ -3,8 +3,10 @@ import { getDbClient } from '../config';
 import { interfaces, enums, constants } from '../utils';
 import logger from './logger';
 
-const createPossibleMatchForUser = async (userId: number, userSettings: interfaces.IGetSettingObject): Promise<interfaces.ICreatePossibleMatchResponse | null>  => { 
-    const params1 = [userId, userSettings.minSearchAge, userSettings.maxSearchAge, userSettings.age, userSettings.searchIn];
+const createPossibleMatchForUser = async (userId: number, userSettings: interfaces.IGetSettingObject, nearbyUsers: interfaces.IGeneric)  => { 
+    //search area not considered
+    const nearbyUserIds = Object.keys(nearbyUsers);
+    const userIdValues = nearbyUserIds.map((id, index) => `$${index+5}`).join(',');
     const query1 = `
         WITH user_embedding_query AS (
             SELECT id, embedding 
@@ -12,67 +14,99 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
             WHERE user_id=$1 
             ORDER BY random() 
             LIMIT 1
-        )
-        SELECT e.user_id, e.id, (SELECT u.id FROM user_embedding_query u) AS user_embedding_id
-        FROM embeddings e
-        LEFT JOIN setting s ON s.user_id = e.user_id
-        WHERE e.user_id!=$1 AND s.age>=$2 AND s.age<=$3 AND 
-        s.max_search_age>=$4 AND s.min_search_age<=$4 AND s.search_in=$5 AND
-        s.active_matches_count < max_matches_allowed AND   
-        ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
-        AND s.user_id NOT IN 
-        (
+        ), blocked_users AS (
             SELECT 
             CASE 
                 WHEN user_id_1=$1 THEN user_id_2
                 ELSE user_id_1
-            END as blocked_user 
+            END as excepted_user 
             FROM match_block 
             WHERE (user_id_1=$1 OR user_id_2=$1)
+        ), matched_users AS (
+            SELECT 
+            CASE 
+                WHEN user_id_1=$1 THEN user_id_2
+                ELSE user_id_1
+            END as excepted_user 
+            FROM match 
+            WHERE (user_id_1=$1 OR user_id_2=$1) AND ended=FALSE AND deleted_at is NULL
+        )
+        SELECT e.user_id, e.id AS embedding_2, (SELECT u.id FROM user_embedding_query u) AS embedding_1
+        FROM embeddings e
+        LEFT JOIN setting s ON s.user_id = e.user_id
+        WHERE 
+        e.user_id!=$1 AND 
+        s.user_id IN (${userIdValues}) AND
+        s.age>=$2 AND s.age<=$3 AND 
+        s.max_search_age>=$4 AND s.min_search_age<=$4 AND 
+        s.active_matches_count < max_matches_allowed AND   
+        ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
+        AND s.user_id NOT IN 
+        (
+            SELECT excepted_user FROM blocked_users
+            UNION
+            SELECT excepted_user FROM matched_users
         )
         ORDER BY (
             e.embedding <=> (SELECT u.embedding FROM user_embedding_query u)
         ) 
         LIMIT 1
     `;
-    const query2 = 'INSERT INTO match(country, city, user_id_1, user_id_2) VALUES ($1, $2, $3, $4) RETURNING match.id';
-    const query3 = 'UPDATE setting SET active_matches_count=active_matches_count+1 WHERE user_id=$1 OR user_id=$2';
-    let res: QueryResult | null = null;
-    let isMatched = false;
+    const query2 = `
+        INSERT INTO 
+        match(country, user_id_1, geohash_1, embedding_1, user_id_2, geohash_2, embedding_2) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7) 
+        RETURNING match.id
+    `;
+    const query3 = `
+        UPDATE setting 
+        SET active_matches_count=active_matches_count+1 
+        WHERE user_id=$1 OR user_id=$2
+    `;
+    const params1 = [
+        userId, userSettings.minSearchAge, userSettings.maxSearchAge, 
+        userSettings.age, ...nearbyUserIds
+    ];
+    let createMatchRes: interfaces.ICreatePossibleMatchResponse | null = null;
     const client = await getDbClient();
     try {
         await client.query('BEGIN');
-        const params2 = [userSettings.country, userSettings.searchIn, userId];
-        const user = await client.query(query1, params1);
-        if (!user?.rows?.length) {
-            throw new Error();
+        const matchedUserRes = await client.query(query1, params1);
+        if (!matchedUserRes?.rows?.length) {
+            throw new Error('No match found');
         }
-        params2.push(user.rows[0].user_id);
-        res = await client.query(query2, params2);
-        if (!user?.rows?.length) {
-            throw new Error();
+        const params2 = [userSettings.country, userId, userSettings.geohash];
+        const matchedUserId = matchedUserRes.rows[0].user_id;
+        const userEmbeddingId = matchedUserRes.rows[0].embedding_1;
+        const matchedUserEmbeddingId = matchedUserRes.rows[0].embedding_2;
+        const matchedUserGeohash = nearbyUsers[matchedUserId];
+        params2.push(userEmbeddingId);
+        params2.push(matchedUserId);
+        params2.push(matchedUserGeohash);
+        params2.push(matchedUserEmbeddingId);
+        const matchRes = await client.query(query2, params2);
+        if (!matchRes?.rows?.length) {
+            throw new Error('Create Match Failed');
         }
-        const params3 = [userId, user.rows[0].user_id];
+        const params3 = [userId, matchedUserId];
         await client.query(query3, params3);
         await client.query('COMMIT');
-        isMatched = true;
+        createMatchRes = {
+            userId,
+            matchId: matchRes.rows[0].id,
+            matchedUserId: matchedUserId
+        }
     } catch (error: any) {
-        // const errorString = JSON.stringify({
-        //     stack: error?.stack,
-        //     message: error?.toString()
-        // });
-        // await logger('Process Service: ' + enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + userId?.toString() + ' ' + errorString);
+        const errorString = JSON.stringify({
+            stack: error?.stack,
+            message: error?.toString()
+        });
+        await logger(enums.PrefixesForLogs.DB_CREATE_POSSIBLE_MATCH_ERROR + userId?.toString() + ' ' + errorString);
         await client.query('ROLLBACK');
     } finally {
         client.release();
-    }
-    if (isMatched) {
-        const check = res?.rows?.length ? { 
-            matchId: <number>res.rows[0].id 
-        } : null;
-        return check;
-    }
-    return null;
+    } 
+    return createMatchRes;
 }
 
 export default createPossibleMatchForUser;

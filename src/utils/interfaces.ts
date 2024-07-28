@@ -28,19 +28,21 @@ interface IBaseModel {
 interface IGetSettingObject {
     id: number,
     age: number,
-    city?: string,
     country: string, 
     searchFor: string,
-    searchIn: string,
     gender: string,
     minSearchAge: number,
     maxSearchAge: number,
     activeMatchesCount: number,
-    maxMatchesAllowed: number
+    maxMatchesAllowed: number,
+    searchArea: string,
+    geohash: string
 }
 
 interface ICreatePossibleMatchResponse {
-    matchId: number
+    matchId: number,
+    userId: number,
+    matchedUserId: number
 }
 
 interface ISaveMessageData {

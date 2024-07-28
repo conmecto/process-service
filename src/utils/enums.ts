@@ -14,6 +14,12 @@ export enum Search {
     EVERYONE = 'everyone'
 }
 
+export enum SearchArea {
+    CLOSE = 'close',
+    MID = 'mid',
+    DISTANT = 'distant'
+}
+
 export enum StatusCodes {
     OK = 200,
     CREATED = 201,
