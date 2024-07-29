@@ -1,4 +1,3 @@
-import { QueryResult } from 'pg';
 import { getDbClient } from '../config';
 import { interfaces, enums, constants } from '../utils';
 import logger from './logger';
@@ -49,7 +48,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         )
         ORDER BY (
             e.embedding <=> (SELECT u.embedding FROM user_embedding_query u)
-        ) 
+        ) DESC
         LIMIT 1
     `;
     const query2 = `
