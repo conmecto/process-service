@@ -48,7 +48,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         )
         ORDER BY (
             e.embedding <=> (SELECT u.embedding FROM user_embedding_query u)
-        ) DESC
+        ) ASC
         LIMIT 1
     `;
     const query2 = `
