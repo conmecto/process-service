@@ -4,6 +4,7 @@ import handleSaveChatMessage from './handleSaveChatMessage';
 import handleLogging from './handleLogging';
 import logger from './logger';
 import handleAccountRemovedMessage from './handleAccountRemovedMessage';
+import handleAddSettingsMessage from './handleAddSettingMessage';
 
 export {
     CustomError,
@@ -11,5 +12,6 @@ export {
     handleSaveChatMessage,
     handleLogging,
     logger,
-    handleAccountRemovedMessage
+    handleAccountRemovedMessage,
+    handleAddSettingsMessage
 }

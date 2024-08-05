@@ -54,6 +54,21 @@ interface ISaveMessageData {
     fileData: Record<string, any>
 }
 
+interface ICreateSettingObject {
+    userId: number,
+    age: number,
+    searchFor: string,
+    gender: string,
+    minSearchAge: number,
+    maxSearchAge: number
+}
+
+interface ICreateLocationSettingObject {
+    country: string, 
+    userId: number
+}
+
 export { 
-    IGeneric, IRequestObject, IGenericResponse, IGetSettingObject, ICreatePossibleMatchResponse, ISaveMessageData
+    IGeneric, IRequestObject, IGenericResponse, IGetSettingObject, ICreatePossibleMatchResponse, ISaveMessageData,
+    ICreateSettingObject, ICreateLocationSettingObject
 };
