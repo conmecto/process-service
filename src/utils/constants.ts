@@ -23,6 +23,11 @@ const GenderSearchForCombinations = {
         women: "gender='nonbinary'",
         men: "gender='nonbinary'",
         everyone: "gender='nonbinary'",
+    },
+    'n/s': { 
+        women: "gender='n/s'",
+        men: "gender='n/s'",
+        everyone: "gender='n/s'",
     }
 }
 

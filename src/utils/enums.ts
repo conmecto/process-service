@@ -5,7 +5,8 @@ export enum Country {
 export enum Gender {
     MAN = 'man',
     WOMAN = 'woman',
-    NON_BINARY = 'nonbinary'
+    NON_BINARY = 'nonbinary',
+    NOT_SPECIFIED = 'n/s'
 }
 
 export enum Search {
