@@ -1,5 +1,8 @@
 export enum Country {
-    INDIA = 'india'
+    INDIA = 'in',
+    // AUSTRALIA = 'au',
+    // UNITED_KINGDOM = 'gb',
+    UNITED_STATES_OF_AMERICA = 'us',
 }
 
 export enum Gender {
