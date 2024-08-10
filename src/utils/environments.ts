@@ -41,8 +41,7 @@ export default {
         },
         matchQueue: process.env.MATCH_QUEUE || 'match-queue',
         connectTimeout: Number(process.env.REDIS_CONNECT_TIMEOUT) || 30000,
-        maxNumberOfMatchQueue: Number(process.env.REDIS_MAX_NUMBER_OF_MATCH_QUEUE) || 10,
-        matchQueueItemLimit: Number(process.env.REDIS_MATCH_QUEUE_ITEM_LIMIT) || 100000
+        maxNumberOfMatchQueue: Number(process.env.REDIS_MAX_NUMBER_OF_MATCH_QUEUE) || 1
     },
     token: {
         publicKey: process.env.TOKEN_PUBLIC_KEY || 'TEMP_PUBLIC_KEY'
