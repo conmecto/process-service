@@ -17,7 +17,7 @@ const pool = new Pool({
     ...(Environments.env === 'prod' ? {
         ssl: {
             rejectUnauthorized: true,
-            ca: readFileSync(join(__dirname, '..', '..', '/2', '/key.pem'))?.toString()
+            ca: readFileSync(join(__dirname, '..', '..', '/1/', Environments.database.keyName))?.toString()
         }
     } : (
         Environments.env === 'test' ? 
