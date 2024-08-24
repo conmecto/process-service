@@ -16,14 +16,20 @@ const removeSetting = async (userId: number) => {
         WHERE (user_id_1=$1 OR user_id_2=$1) AND ended=false AND deleted_at IS NULL
         RETURNING user_id_1, user_id_2
     `;
+    const query3 = `
+        UPDATE embeddings 
+        SET deleted_at=$2
+        WHERE user_id=$1 AND deleted_at IS NULL
+    `;
     let res: QueryResult | null = null;
     const client = await getDbClient();
     try {
         await client.query('BEGIN');
         res = await client.query(query1, params1);
         const matchUpdateRes = await client.query(query2, params1);
+        await client.query(query3, params1);
         if (matchUpdateRes.rows.length) {
-            const query3 = `
+            const query4 = `
                 UPDATE setting 
                 SET active_matches_count=active_matches_count-1
                 WHERE user_id IN (
@@ -31,10 +37,10 @@ const removeSetting = async (userId: number) => {
                 )
                 AND deleted_at IS NULL
             `;
-            const params3 = matchUpdateRes.rows.map(r => {
+            const params4 = matchUpdateRes.rows.map(r => {
                 return r.user_id_1 === userId ? r.user_id_2: r.user_id_1
             })
-            await client.query(query3, params3);
+            await client.query(query4, params4);
         }
         await client.query('COMMIT');
     } catch (err) {
