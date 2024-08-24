@@ -46,6 +46,7 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
             UNION
             SELECT excepted_user FROM matched_users
         )
+        AND e.deleted_at IS NULL
         ORDER BY (
             e.embedding <=> (SELECT u.embedding FROM user_embedding_query u)
         ) ASC
