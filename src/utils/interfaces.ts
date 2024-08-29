@@ -55,12 +55,7 @@ interface ISaveMessageData {
 }
 
 interface ICreateSettingObject {
-    userId: number,
-    age: number,
-    searchFor: string,
-    gender: string,
-    minSearchAge: number,
-    maxSearchAge: number
+    userId: number
 }
 
 interface ICreateLocationSettingObject {
