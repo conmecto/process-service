@@ -3,21 +3,8 @@ import addSetting from './addSetting';
 import addUserInMatchQueue from './addUserInMatchQueue';
 
 const handleAddSettingsMessage = async (payload: any) => {
-    const { dob, id: userId, gender, country, searchFor } = payload;
-    const age = helpers.getAge(dob);
-    const settingDoc = { 
-        age, 
-        gender, 
-        maxSearchAge: age + (age < 70 ? 1 : 0), 
-        minSearchAge: age + (age > 18 ? -1 : 0), 
-        searchFor, 
-        userId 
-    };
-    const locationDoc: interfaces.ICreateLocationSettingObject = {
-        country,
-        userId,
-    }
-    const res = await addSetting(settingDoc, locationDoc);
+    const { id: userId, country } = payload;
+    const res = await addSetting(userId, country);
     if (!res) {
         throw new Error('Add Setting Failed');
     }
