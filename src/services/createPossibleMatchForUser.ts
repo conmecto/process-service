@@ -35,8 +35,9 @@ const createPossibleMatchForUser = async (userId: number, userSettings: interfac
         LEFT JOIN setting s ON s.user_id = e.user_id
         WHERE 
         e.user_id!=$1 AND 
+        s.dob IS NOT NULL AND
         s.user_id IN (${userIdValues}) AND
-        s.age>=$2 AND s.age<=$3 AND 
+        EXTRACT(year from age(s.dob))>=$2 AND EXTRACT(year from age(s.dob))<=$3 AND 
         s.max_search_age>=$4 AND s.min_search_age<=$4 AND 
         s.active_matches_count < max_matches_allowed AND   
         ${constants.GenderSearchForCombinations[userSettings.gender][userSettings.searchFor]} 
