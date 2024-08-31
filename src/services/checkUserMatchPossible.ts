@@ -5,11 +5,16 @@ import logger from './logger';
 
 const checkUserMatchPossible = async (userId: number) => {
     const query = `
-        SELECT s.id, s.age, s.gender, s.max_search_age, s.min_search_age, s.search_for, 
-        s.max_matches_allowed, s.active_matches_count, ls.search_area, ls.geohash, ls.country
+        SELECT s.id, s.gender, s.max_search_age, s.min_search_age, s.search_for, 
+        s.max_matches_allowed, s.active_matches_count, ls.search_area, ls.geohash, ls.country,
+        CASE 
+            WHEN s.dob IS NULL THEN NULL
+            ELSE EXTRACT(YEAR FROM AGE(s.dob))
+        END AS age 
         FROM setting s
         LEFT JOIN location_setting ls ON s.user_id=ls.user_id
         WHERE 
+        s.dob IS NOT NULL AND
         s.active_matches_count < s.max_matches_allowed AND 
         ls.geohash IS NOT NULL AND 
         s.user_id IN (
